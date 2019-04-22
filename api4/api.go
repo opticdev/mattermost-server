@@ -4,13 +4,16 @@
 package api4
 
 import (
-	"net/http"
-
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/app"
 	"github.com/mattermost/mattermost-server/model"
 	"github.com/mattermost/mattermost-server/services/configservice"
 	"github.com/mattermost/mattermost-server/web"
+	optic "github.com/opticdev/api-ingestion/integrations/go-mux"
+	"net/http"
+	"os"
+	"strings"
 
 	_ "github.com/nicksnyder/go-i18n/i18n"
 )
@@ -125,6 +128,11 @@ func Init(configservice configservice.ConfigService, globalOptionsFunc app.AppOp
 		ConfigService:       configservice,
 		GetGlobalAppOptions: globalOptionsFunc,
 		BaseRoutes:          &Routes{},
+	}
+
+	shouldUseOpticDocumentingMiddleware := len(os.Getenv("OPTIC_SERVER_LISTENING")) > 0
+	if shouldUseOpticDocumentingMiddleware {
+		root.Use(optic.Middleware)
 	}
 
 	api.BaseRoutes.Root = root
@@ -249,6 +257,33 @@ func Init(configservice configservice.ConfigService, globalOptionsFunc app.AppOp
 	api.InitAction()
 
 	root.Handle("/api/v4/{anything:.*}", http.HandlerFunc(api.Handle404))
+
+	if shouldUseOpticDocumentingMiddleware {
+		_ = root.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+			pathTemplate, err := route.GetPathTemplate()
+			if err == nil {
+				fmt.Println("ROUTE:", pathTemplate)
+			}
+			pathRegexp, err := route.GetPathRegexp()
+			if err == nil {
+				fmt.Println("Path regexp:", pathRegexp)
+			}
+			queriesTemplates, err := route.GetQueriesTemplates()
+			if err == nil {
+				fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
+			}
+			queriesRegexps, err := route.GetQueriesRegexp()
+			if err == nil {
+				fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
+			}
+			methods, err := route.GetMethods()
+			if err == nil {
+				fmt.Println("Methods:", strings.Join(methods, ","))
+			}
+			fmt.Println()
+			return nil
+		})
+	}
 
 	return api
 }

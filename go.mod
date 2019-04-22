@@ -22,7 +22,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190309154008-847fc94819f9 // indirect
-	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.7.0
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/websocket v1.4.0
@@ -54,6 +53,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/opticdev/api-ingestion/integrations/go-mux v0.0.0-20190422020451-ca678580c846
 	github.com/pascaldekloe/goe v0.1.0 // indirect
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
@@ -95,3 +95,5 @@ require (
 
 // Workaround for https://github.com/golang/go/issues/30831 and fallout.
 replace github.com/golang/lint => github.com/golang/lint v0.0.0-20190227174305-8f45f776aaf1
+
+//replace github.com/opticdev/api-ingestion/integrations/go-mux => ../../opticdev/api-ingestion/integrations/go-mux
